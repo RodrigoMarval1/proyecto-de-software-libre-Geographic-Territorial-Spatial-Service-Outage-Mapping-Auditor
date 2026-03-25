@@ -1,0 +1,1 @@
+# proyecto-de-software-libre-Geographic-Territorial-Spatial-Service-Outage-Mapping-Auditor
