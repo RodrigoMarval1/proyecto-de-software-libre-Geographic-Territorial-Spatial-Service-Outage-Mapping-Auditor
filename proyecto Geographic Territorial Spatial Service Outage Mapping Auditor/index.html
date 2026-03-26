@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIS Auditor de Fallas en Servicios</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Dashboard Left Panel -->
+        <div class="ui-overlay">
+            <div class="glass-panel header-panel fade-in">
+                <h1>GeoAuditor GIS</h1>
+                <p style="font-size:0.9rem; opacity: 0.8; line-height: 1.4;">Plataforma de inteligencia comunitaria para la gestión de servicios públicos.</p>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar dirección o sector...">
+                    <button class="btn btn-primary" id="btnSearch" title="Buscar">🔎</button>
+                </div>
+                <a href="dashboard.html" class="dashboard-link">📊 Ver Dashboard Analítico &rarr;</a>
+            </div>
+
+            <div class="glass-panel filters-panel fade-in" style="animation-delay: 0.1s;">
+                <h3 style="font-size:1rem; margin-bottom: 5px;">Filtrar por Categoría</h3>
+                <div class="filter-chips">
+                    <div class="chip active" data-category="todos">Todas</div>
+                    <div class="chip" data-category="agua">💧 Agua</div>
+                    <div class="chip" data-category="electricidad">⚡ Electricidad</div>
+                    <div class="chip" data-category="vialidad">🛣️ Vialidad</div>
+                    <div class="chip" data-category="otros">📌 Otros</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Map Container -->
+        <div id="map"></div>
+
+        <!-- Floating Action Button -->
+        <div class="fab-container fade-in" style="animation-delay: 0.2s;">
+            <button class="fab" id="btnAddReport" title="Reportar Nueva Falla">+</button>
+        </div>
+    </div>
+
+    <!-- Modal for Reporting -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="glass-panel modal-content">
+            <div class="modal-header">
+                <h2>Registrar Falla</h2>
+                <button class="close-btn" id="btnCloseModal">&times;</button>
+            </div>
+            <form id="reportForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Título del Reporte</label>
+                    <input type="text" id="title" name="title" class="form-control" required placeholder="Ej. Bote de aguas blancas en Av. Principal">
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Categoría de Servicio</label>
+                    <select id="category" name="category" class="form-control" required>
+                        <option value="">Seleccione una categoría...</option>
+                        <option value="agua">Agua Blanca/Servida</option>
+                        <option value="electricidad">Electricidad (Apagón, Poste Dañado)</option>
+                        <option value="vialidad">Vialidad (Hueco, Asfalto roto)</option>
+                        <option value="otros">Otros / Múltiples</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción Detallada (Opcional)</label>
+                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Proporciona detalles adicionales que ayuden a la resolución de la falla..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Ubicación (Coordenadas Geoespaciales)</label>
+                    <div class="location-picker">
+                        <input type="text" id="lat" name="lat" class="form-control" placeholder="Latitud" readonly required>
+                        <input type="text" id="lng" name="lng" class="form-control" placeholder="Longitud" readonly required>
+                        <button type="button" class="btn btn-primary" id="btnGeolocate" title="Obtener mi ubicación actual GPS">📍</button>
+                    </div>
+                    <small style="opacity: 0.7; font-size: 0.8rem; display: block; margin-top: 5px;">Presiona el botón 📍 para autonavegar a tu posición o haz clic en el mapa del fondo.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Fotografía Referencial</label>
+                    <input type="file" id="image" name="image" class="form-control" accept="image/png, image/jpeg, image/jpg">
+                </div>
+
+                <div style="text-align: right; margin-top: 25px;">
+                    <button type="submit" class="btn btn-success" id="btnSubmitForm" style="width: 100%; font-size: 1.1rem; padding: 15px;">🚀 Guardar y Publicar Reporte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

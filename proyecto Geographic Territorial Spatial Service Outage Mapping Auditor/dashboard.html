@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analítico | GIS Auditor</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-header fade-in">
+        <div>
+            <h1>Inteligencia de Datos Territoriales</h1>
+            <p style="font-size: 1.1rem; opacity: 0.8;">Sistematización analítica para la toma de decisiones institucionales y priorización de inversión.</p>
+        </div>
+        <a href="index.html" class="btn btn-primary">⬅️ Volver al Mapa Operativo</a>
+    </div>
+
+    <div class="dashboard-grid fade-in" style="animation-delay: 0.1s;">
+        <!-- Distribution by status -->
+        <div class="glass-panel stat-card">
+            <h3>📈 Reportes por Estado</h3>
+            <p style="font-size: 0.85rem; opacity: 0.8;">Indicadores de resolución de problemas</p>
+            <table class="table" id="statusTable">
+                <thead>
+                    <tr>
+                        <th>Estado Actual</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- By Category -->
+        <div class="glass-panel stat-card">
+            <h3>📊 Desglose por Servicio (Categoría)</h3>
+            <p style="font-size: 0.85rem; opacity: 0.8;">Identificación de los servicios con más fallas funcionales</p>
+            <table class="table" id="categoryTable">
+                <thead>
+                    <tr>
+                        <th>Categoría de Servicio</th>
+                        <th>Reportes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top 5 Sectors (Aproximated coordinates) -->
+        <div class="glass-panel stat-card">
+            <h3>📍 Top 5 Zonas Críticas</h3>
+            <p style="font-size: 0.85rem; opacity: 0.8;">Agrupamiento por sector urbano (Geo Clusters)</p>
+            <table class="table" id="topSectorsTable">
+                <thead>
+                    <tr>
+                        <th>Área / Cuadrante GPS (Lat, Lng)</th>
+                        <th># Incidencias</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="glass-panel stat-card" style="grid-column: 1 / -1; margin-top: 10px;">
+            <h3>⏱️ Tráfico Transaccional Reciente (Ingresos de Fallas)</h3>
+            <table class="table" id="recentTable">
+                <thead>
+                    <tr>
+                        <th>ID Ticket</th>
+                        <th>Servicio</th>
+                        <th>Problema Declarado</th>
+                        <th>Fecha y Hora</th>
+                        <th>Estado Resolutivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="dashboard.js"></script>
+</body>
+</html>
