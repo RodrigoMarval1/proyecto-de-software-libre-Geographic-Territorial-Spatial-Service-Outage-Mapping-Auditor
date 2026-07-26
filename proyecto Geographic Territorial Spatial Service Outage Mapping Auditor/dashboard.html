@@ -70,6 +70,24 @@
             </table>
         </div>
 
+        <!-- Incident Types by Zone Breakdown -->
+        <div class="glass-panel stat-card" style="grid-column: 1 / -1; margin-top: 10px;">
+            <h3>🗺️ Tipos de Incidentes por Zona Territoriales</h3>
+            <p style="font-size: 0.85rem; opacity: 0.8;">Matriz de categorías (Eléctrico, Agua, Asfaltado, Accidente, Otros) por sector</p>
+            <table class="table" id="zoneCategoryTable">
+                <thead>
+                    <tr>
+                        <th>Sector / Cuadrante GPS (Lat, Lng)</th>
+                        <th>Categoría / Tipo de Incidente</th>
+                        <th># Incidentes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+
         <!-- Recent Activity -->
         <div class="glass-panel stat-card" style="grid-column: 1 / -1; margin-top: 10px;">
             <h3>⏱️ Tráfico Transaccional Reciente (Ingresos de Fallas)</h3>
@@ -77,7 +95,7 @@
                 <thead>
                     <tr>
                         <th>ID Ticket</th>
-                        <th>Servicio</th>
+                        <th>Servicio / Tipo</th>
                         <th>Problema Declarado</th>
                         <th>Fecha y Hora</th>
                         <th>Estado Resolutivo</th>

@@ -19,41 +19,94 @@ document.addEventListener('DOMContentLoaded', () => {
     map.addLayer(markersCluster);
 
 
+    let currentGeojsonData = null;
+
+    const categoryLabels = {
+        'electricidad': '⚡ Eléctrico',
+        'agua': '💧 Agua',
+        'asfaltado': '🛣️ Asfaltado',
+        'accidente': '💥 Accidente',
+        'vialidad': '🛣️ Vialidad/Asfaltado',
+        'otros': '📌 Otros'
+    };
+
+    // Actualiza resumen de zona por coordenadas visibles
+    const updateZoneSummary = () => {
+        if (!currentGeojsonData || !currentGeojsonData.features) return;
+
+        const bounds = map.getBounds();
+        const stats = {
+            electricidad: 0,
+            agua: 0,
+            asfaltado: 0,
+            accidente: 0,
+            otros: 0
+        };
+        let totalInZone = 0;
+
+        currentGeojsonData.features.forEach(feature => {
+            const [lng, lat] = feature.geometry.coordinates;
+            if (bounds.contains([lat, lng])) {
+                totalInZone++;
+                const cat = feature.properties.category;
+                if (cat === 'electricidad') stats.electricidad++;
+                else if (cat === 'agua') stats.agua++;
+                else if (cat === 'asfaltado' || cat === 'vialidad') stats.asfaltado++;
+                else if (cat === 'accidente') stats.accidente++;
+                else stats.otros++;
+            }
+        });
+
+        const badgeElem = document.getElementById('zoneTotalBadge');
+        if (badgeElem) badgeElem.textContent = `${totalInZone} falla${totalInZone === 1 ? '' : 's'}`;
+
+        if (document.getElementById('stat-electricidad')) document.getElementById('stat-electricidad').textContent = stats.electricidad;
+        if (document.getElementById('stat-agua')) document.getElementById('stat-agua').textContent = stats.agua;
+        if (document.getElementById('stat-asfaltado')) document.getElementById('stat-asfaltado').textContent = stats.asfaltado;
+        if (document.getElementById('stat-accidente')) document.getElementById('stat-accidente').textContent = stats.accidente;
+        if (document.getElementById('stat-otros')) document.getElementById('stat-otros').textContent = stats.otros;
+    };
+
+    map.on('moveend', updateZoneSummary);
+    map.on('zoomend', updateZoneSummary);
+
     // ---- 2. CARGA DE REPORTES (GEOJSON DESDE LA API) ----
     const loadReports = async (category = 'todos') => {
         try {
             const response = await fetch(`get_reports.php?category=${encodeURIComponent(category)}`);
             if (!response.ok) throw new Error("Error en la conexión a la API");
-            
+
             const geojsonData = await response.json();
+            currentGeojsonData = geojsonData;
             renderMarkers(geojsonData);
+            updateZoneSummary();
         } catch (error) {
             console.error("No se pudieron cargar los reportes:", error);
-            // Puede no haber tabla o conexión si no se ejecuta Laragon
         }
     };
 
     const renderMarkers = (geojsonData) => {
         markersCluster.clearLayers(); // Limpiar el cluster para el redibujado (Filtros)
-        
+
         const geoJsonLayer = L.geoJSON(geojsonData, {
             onEachFeature: (feature, layer) => {
                 const props = feature.properties;
                 const statusClass = `status-${props.current_state.replace(' ', '-')}`;
                 const statusBadge = `<span class="status-badge ${statusClass}">${props.current_state}</span>`;
-                
+                const categoryText = categoryLabels[props.category] || props.category;
+
                 let imgHtml = '';
                 if (props.image_path) {
                     imgHtml = `<img src="${props.image_path}" class="popup-img" alt="Foto referencia de la falla">`;
                 }
-                
+
                 const popupContent = `
                     <div style="min-width: 220px;">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 8px;">
                             <h3 style="margin:0; font-size:1.05rem; line-height:1.2; padding-right:10px;">${props.title}</h3>
                             ${statusBadge}
                         </div>
-                        <p style="font-size:0.85rem; margin:6px 0;"><strong>Servicio:</strong> <span style="text-transform:capitalize">${props.category}</span></p>
+                        <p style="font-size:0.85rem; margin:6px 0;"><strong>Tipo / Categoría:</strong> <span>${categoryText}</span></p>
                         <p style="font-size:0.85rem; margin:6px 0; opacity:0.85;">${props.description || 'Sin descripción detallada.'}</p>
                         <p style="font-size:0.75rem; color:gray; font-weight:600; margin-top:8px;">Reportado el: ${new Date(props.created_at).toLocaleString('es-ES')}</p>
                         ${imgHtml}
@@ -78,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chips.forEach(c => c.classList.remove('active'));
             const target = e.target;
             target.classList.add('active');
-            
+
             // Refetch data
             const category = target.getAttribute('data-category');
             loadReports(category);
@@ -98,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Venezuela')}`);
             const data = await res.json();
-            
+
             if (data && data.length > 0) {
                 const { lat, lon } = data[0];
                 map.flyTo([lat, lon], 16, { duration: 1.5 });
@@ -124,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCloseModal = document.getElementById('btnCloseModal');
     const reportModal = document.getElementById('reportModal');
     const reportForm = document.getElementById('reportForm');
-    
+
     // Inputs del form
     const inputLat = document.getElementById('lat');
     const inputLng = document.getElementById('lng');
@@ -137,10 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
         reportModal.classList.remove('active');
         reportForm.reset();
     });
-    
+
     // Cerrar si se da click fuera del panel principal del modal
     reportModal.addEventListener('click', (e) => {
-        if(e.target === reportModal) {
+        if (e.target === reportModal) {
             reportModal.classList.remove('active');
             reportForm.reset();
         }
@@ -151,21 +204,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if ('geolocation' in navigator) {
             btnGeolocate.textContent = "⏳";
             btnGeolocate.disabled = true;
-            
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    
+
                     inputLat.value = lat.toFixed(6);
                     inputLng.value = lng.toFixed(6);
-                    
+
                     btnGeolocate.textContent = "📍";
                     btnGeolocate.disabled = false;
-                    
+
                     // Solo volar si el modal NO está tapando todo (o visualmente útil)
                     map.flyTo([lat, lng], 17);
-                }, 
+                },
                 (error) => {
                     console.warn("Location error:", error);
                     alert("No se pudo obtener la ubicación automáticamente. Por favor, haz clic directamente sobre el mapa.");
@@ -185,35 +238,35 @@ document.addEventListener('DOMContentLoaded', () => {
     map.on('click', (e) => {
         const lat = e.latlng.lat.toFixed(6);
         const lng = e.latlng.lng.toFixed(6);
-        
+
         inputLat.value = lat;
         inputLng.value = lng;
-        
+
         // Poner un marcador temporal rojo para que el usuario visualice su click
-        if(tempMarker) {
+        if (tempMarker) {
             map.removeLayer(tempMarker);
         }
-        
+
         const customIcon = L.divIcon({
             className: 'custom-div-icon',
             html: "<div style='background-color:#e11d48; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);'></div>",
             iconSize: [15, 15],
             iconAnchor: [7.5, 7.5]
         });
-        
-        tempMarker = L.marker([lat, lng], {icon: customIcon}).addTo(map);
+
+        tempMarker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
 
         // Si el panel no estaba abierto de antemano, lo abrimos automáticamente
         if (!reportModal.classList.contains('active')) {
-             reportModal.classList.add('active');
+            reportModal.classList.add('active');
         }
     });
 
     // ---- 6. ENVÍO DE FORMULARIO (POST MULTIPART) ----
     reportForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        if(!inputLat.value || !inputLng.value) {
+
+        if (!inputLat.value || !inputLng.value) {
             alert("Debes proveer la ubicación geográfica.Usa el botón 📍 o haz clic en el mapa.");
             return;
         }
@@ -241,12 +294,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 alert("¡Éxito! " + result.message);
-                
+
                 // Limpieza visual
                 reportModal.classList.remove('active');
                 reportForm.reset();
-                if(tempMarker) map.removeLayer(tempMarker);
-                
+                if (tempMarker) map.removeLayer(tempMarker);
+
                 // Actualizar inmediatamente mapa
                 const activeCat = document.querySelector('.chip.active').getAttribute('data-category');
                 loadReports(activeCat);

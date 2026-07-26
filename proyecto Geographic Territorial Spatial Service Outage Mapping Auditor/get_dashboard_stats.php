@@ -31,7 +31,16 @@ $stmt_sectors = $db->prepare($query_sectors);
 $stmt_sectors->execute();
 $stats['top_sectors'] = $stmt_sectors->fetchAll(PDO::FETCH_ASSOC);
 
-// 4. Reportes Recientes
+// Desglose por zona (coordenadas) y tipo de incidente
+$query_zone_cat = "SELECT ROUND(lat, 3) as sector_lat, ROUND(lng, 3) as sector_lng, category, COUNT(*) as count 
+                   FROM reports 
+                   GROUP BY ROUND(lat, 3), ROUND(lng, 3), category 
+                   ORDER BY sector_lat, sector_lng, count DESC";
+$stmt_zone_cat = $db->prepare($query_zone_cat);
+$stmt_zone_cat->execute();
+$stats['by_zone_and_category'] = $stmt_zone_cat->fetchAll(PDO::FETCH_ASSOC);
+
+// 5. Reportes Recientes
 $query_recent = "SELECT id, title, category, created_at, current_state FROM reports ORDER BY created_at DESC LIMIT 5";
 $stmt_recent = $db->prepare($query_recent);
 $stmt_recent->execute();

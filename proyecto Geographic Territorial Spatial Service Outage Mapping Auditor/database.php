@@ -4,24 +4,26 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-class Database {
+class Database
+{
     private $host = "127.0.0.1";
     private $username = "root";
     private $password = ""; // Contraseña por defecto en Laragon
     private $db_name = "outage_mapping";
     public $conn;
 
-    public function getConnection() {
+    public function getConnection()
+    {
         $this->conn = null;
 
         try {
             // Conectar a MySQL genérico primero para poder crear la DB si no existe
             $this->conn = new PDO("mysql:host=" . $this->host, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
+
             // 1. Crear Base de datos si no existe
             $this->conn->exec("CREATE DATABASE IF NOT EXISTS `" . $this->db_name . "` DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-            
+
             // 2. Usar la base de datos
             $this->conn->exec("USE `" . $this->db_name . "`");
             $this->conn->exec("set names utf8mb4");
@@ -31,7 +33,7 @@ class Database {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
-                category ENUM('agua', 'electricidad', 'vialidad', 'otros') NOT NULL,
+                category ENUM('agua', 'electricidad', 'vialidad', 'asfaltado', 'accidente', 'otros') NOT NULL,
                 lat DECIMAL(10, 8) NOT NULL,
                 lng DECIMAL(11, 8) NOT NULL,
                 image_path VARCHAR(255),
@@ -42,6 +44,13 @@ class Database {
                 INDEX (current_state)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
             $this->conn->exec($table1);
+
+            // Actualizar columna category para nuevos tipos de incidentes
+            try {
+                $this->conn->exec("ALTER TABLE reports MODIFY COLUMN category ENUM('agua', 'electricidad', 'vialidad', 'asfaltado', 'accidente', 'otros') NOT NULL");
+            } catch (PDOException $e) {
+                // Silencioso si la tabla es nueva o ya tiene la estructura
+            }
 
             $table2 = "CREATE TABLE IF NOT EXISTS report_status_history (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,7 +63,7 @@ class Database {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
             $this->conn->exec($table2);
 
-        } catch(PDOException $exception) {
+        } catch (PDOException $exception) {
             http_response_code(500);
             header('Content-Type: application/json');
             echo json_encode([

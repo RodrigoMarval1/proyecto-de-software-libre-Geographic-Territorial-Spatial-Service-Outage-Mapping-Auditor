@@ -31,7 +31,7 @@ CREATE TABLE `reports` (
   `id` int NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
-  `category` enum('agua','electricidad','vialidad','otros') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category` enum('agua','electricidad','vialidad','asfaltado','accidente','otros') COLLATE utf8mb4_unicode_ci NOT NULL,
   `lat` decimal(10,8) NOT NULL,
   `lng` decimal(11,8) NOT NULL,
   `image_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
