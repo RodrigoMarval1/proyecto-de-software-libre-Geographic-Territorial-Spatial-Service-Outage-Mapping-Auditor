@@ -28,29 +28,16 @@
             </div>
 
             <div class="glass-panel filters-panel fade-in" style="animation-delay: 0.1s;">
-                <h3 style="font-size:1rem; margin-bottom: 5px;">Filtrar por Categoría / Tipo</h3>
+                <h3 style="font-size:1rem; margin-bottom: 5px;">Filtrar por Tipo de Incidente</h3>
+                <!-- Aquí renderiza los botones de filtro por tipo de incidente para actualizar el mapa -->
                 <div class="filter-chips">
                     <div class="chip active" data-category="todos">Todas</div>
-                    <div class="chip" data-category="electricidad">⚡ Eléctrico</div>
-                    <div class="chip" data-category="agua">💧 Agua</div>
+                    <div class="chip" data-category="electrico">⚡ Eléctrico</div>
                     <div class="chip" data-category="asfaltado">🛣️ Asfaltado</div>
                     <div class="chip" data-category="accidente">💥 Accidente</div>
+                    <div class="chip" data-category="agua">💧 Agua</div>
+                    <div class="chip" data-category="vialidad">🚧 Vialidad</div>
                     <div class="chip" data-category="otros">📌 Otros</div>
-                </div>
-            </div>
-
-            <!-- Resumen de Incidentes en la Zona Visible -->
-            <div class="glass-panel zone-summary-panel fade-in" style="animation-delay: 0.15s;" id="zoneSummaryPanel">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-                    <h3 style="font-size:0.95rem; margin:0;">📍 Incidentes en la Zona Determinada</h3>
-                    <span id="zoneTotalBadge" class="zone-badge">0 fallas</span>
-                </div>
-                <div class="zone-stats-grid" id="zoneStatsGrid">
-                    <div class="zone-stat-item"><span class="icon">⚡</span> <span class="label">Eléctrico:</span> <strong id="stat-electricidad">0</strong></div>
-                    <div class="zone-stat-item"><span class="icon">💧</span> <span class="label">Agua:</span> <strong id="stat-agua">0</strong></div>
-                    <div class="zone-stat-item"><span class="icon">🛣️</span> <span class="label">Asfaltado:</span> <strong id="stat-asfaltado">0</strong></div>
-                    <div class="zone-stat-item"><span class="icon">💥</span> <span class="label">Accidente:</span> <strong id="stat-accidente">0</strong></div>
-                    <div class="zone-stat-item"><span class="icon">📌</span> <span class="label">Otros:</span> <strong id="stat-otros">0</strong></div>
                 </div>
             </div>
         </div>
@@ -68,24 +55,26 @@
     <div class="modal-overlay" id="reportModal">
         <div class="glass-panel modal-content">
             <div class="modal-header">
-                <h2>Registrar Falla o Incidente</h2>
+                <h2>Registrar Incidente o Falla</h2>
                 <button class="close-btn" id="btnCloseModal">&times;</button>
             </div>
             <form id="reportForm" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title">Título del Reporte</label>
-                    <input type="text" id="title" name="title" class="form-control" required placeholder="Ej. Transformador caído o Hueco en la calle">
+                    <input type="text" id="title" name="title" class="form-control" required placeholder="Ej. Transformador explotado / Hueco profundo en calzada">
                 </div>
                 
                 <div class="form-group">
                     <label for="category">Tipo de Incidente / Categoría</label>
+                    <!-- Aquí permite seleccionar la categoría o tipo de incidente al crear un nuevo reporte -->
                     <select id="category" name="category" class="form-control" required>
-                        <option value="">Seleccione tipo de incidente...</option>
-                        <option value="electricidad">⚡ Eléctrico (Apagón, Poste, Transformador)</option>
-                        <option value="agua">💧 Agua (Bote de agua blanca/servida, Falla de suministro)</option>
-                        <option value="asfaltado">🛣️ Asfaltado (Hueco, Asfalto deteriorado, Vía dañada)</option>
-                        <option value="accidente">💥 Accidente (Tránsito, Vehicular, Colisión)</option>
-                        <option value="otros">📌 Otros / Múltiples</option>
+                        <option value="">Seleccione el tipo de incidente...</option>
+                        <option value="electrico">⚡ Eléctrico (Apagón, Poste, Transformador)</option>
+                        <option value="asfaltado">🛣️ Asfaltado (Baches, Grietas, Pavimento)</option>
+                        <option value="accidente">💥 Accidente de Tránsito / Siniestro</option>
+                        <option value="agua">💧 Agua (Tubería rota, Bote de agua, Falta de servicio)</option>
+                        <option value="vialidad">🚧 Vialidad (Semáforos, Señalización)</option>
+                        <option value="otros">📌 Otros Incidentes</option>
                     </select>
                 </div>
 

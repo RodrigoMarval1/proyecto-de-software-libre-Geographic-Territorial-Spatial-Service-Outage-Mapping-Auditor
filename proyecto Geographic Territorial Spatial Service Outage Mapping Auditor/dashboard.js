@@ -5,24 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusTable = document.querySelector('#statusTable tbody');
     const categoryTable = document.querySelector('#categoryTable tbody');
     const topSectorsTable = document.querySelector('#topSectorsTable tbody');
-    const zoneCategoryTable = document.querySelector('#zoneCategoryTable tbody');
     const recentTable = document.querySelector('#recentTable tbody');
-
-    const categoryLabels = {
-        'electricidad': '⚡ Eléctrico',
-        'agua': '💧 Agua',
-        'asfaltado': '🛣️ Asfaltado',
-        'accidente': '💥 Accidente',
-        'vialidad': '🛣️ Vialidad/Asfaltado',
-        'otros': '📌 Otros'
-    };
 
     // Función principal para cargar la data de la API analítica
     const loadDashboardData = async () => {
         try {
             const response = await fetch('get_dashboard_stats.php');
             if (!response.ok) throw new Error("Error en conexión de API para Estadísticas");
-
+            
             const data = await response.json();
 
             // ---- 1. Llenar Tabla de Estados ----
@@ -46,15 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.by_category && data.by_category.length > 0) {
                 data.by_category.forEach(item => {
                     const tr = document.createElement('tr');
-                    const catLabel = categoryLabels[item.category] || item.category;
                     tr.innerHTML = `
-                        <td style="font-weight: 500">${catLabel}</td>
+                        <td style="text-transform: capitalize; font-weight: 500">${item.category}</td>
                         <td><strong style="font-size: 1.1rem">${item.total}</strong></td>
                     `;
                     categoryTable.appendChild(tr);
                 });
             } else {
-                categoryTable.innerHTML = '<tr><td colspan="2">Sin datos de categoría.</td></tr>';
+                 categoryTable.innerHTML = '<tr><td colspan="2">Sin datos de categoría.</td></tr>';
             }
 
             // ---- 3. Llenar Top Sectores ----
@@ -77,44 +66,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     topSectorsTable.appendChild(tr);
                 });
             } else {
-                topSectorsTable.innerHTML = '<tr><td colspan="2">No hay concentración de reportes.</td></tr>';
+                 topSectorsTable.innerHTML = '<tr><td colspan="2">No hay concentración de reportes.</td></tr>';
             }
 
-            // ---- 4. Llenar Tipos de Incidentes por Zona ----
-            if (zoneCategoryTable) {
-                zoneCategoryTable.innerHTML = '';
-                if (data.by_zone_and_category && data.by_zone_and_category.length > 0) {
-                    data.by_zone_and_category.forEach(item => {
-                        const tr = document.createElement('tr');
-                        const catLabel = categoryLabels[item.category] || item.category;
-                        tr.innerHTML = `
-                            <td style="font-family:monospace; font-size:0.9rem; color:var(--primary);">
-                                📍 ${item.sector_lat}, ${item.sector_lng}
-                            </td>
-                            <td><strong>${catLabel}</strong></td>
-                            <td><strong style="font-size:1.1rem">${item.count}</strong></td>
-                        `;
-                        zoneCategoryTable.appendChild(tr);
-                    });
-                } else {
-                    zoneCategoryTable.innerHTML = '<tr><td colspan="3">Sin registros por zona.</td></tr>';
-                }
-            }
-
-            // ---- 5. Llenar Tráfico Reciente ----
+            // ---- 4. Llenar Tráfico Reciente ----
             recentTable.innerHTML = '';
             if (data.recent_reports && data.recent_reports.length > 0) {
                 data.recent_reports.forEach(item => {
                     const tr = document.createElement('tr');
-
+                    
                     const dateObj = new Date(item.created_at);
-                    const formattedDate = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const formattedDate = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     const statusClass = `status-${item.current_state.replace(' ', '-')}`;
-                    const catLabel = categoryLabels[item.category] || item.category;
-
+                    
                     tr.innerHTML = `
                         <td style="font-weight: 600; color:var(--primary)">#${String(item.id).padStart(5, '0')}</td>
-                        <td>${catLabel}</td>
+                        <td style="text-transform: capitalize;">${item.category}</td>
                         <td style="font-weight: 500">${item.title}</td>
                         <td style="font-size:0.85rem; opacity:0.8;">${formattedDate}</td>
                         <td><span class="status-badge ${statusClass}">${item.current_state}</span></td>
@@ -122,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     recentTable.appendChild(tr);
                 });
             } else {
-                recentTable.innerHTML = '<tr><td colspan="5" style="text-align:center">No hay reportes recientes en el sistema.</td></tr>';
+                 recentTable.innerHTML = '<tr><td colspan="5" style="text-align:center">No hay reportes recientes en el sistema.</td></tr>';
             }
 
         } catch (error) {

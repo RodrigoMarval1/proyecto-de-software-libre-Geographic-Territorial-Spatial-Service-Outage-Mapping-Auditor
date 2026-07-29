@@ -1,0 +1,13 @@
+[
+    {
+        "id": "1",
+        "title": "e",
+        "description": "e",
+        "category": "electrico",
+        "lat": 10.609318,
+        "lng": -66.828461,
+        "image_path": null,
+        "current_state": "Reportado",
+        "created_at": "2026-07-29 02:56:50"
+    }
+]
